@@ -1,0 +1,92 @@
+<?php
+
+use Blackbit\BundleEnabler\lib\Pim\Helper;
+use Blackbit\BundleEnabler\lib\Pim\Cli;
+use Blackbit\BundleEnabler\Tools\InstallerKernel;
+use Pimcore\Config;
+use Pimcore\Bootstrap;
+
+if (file_exists($a = getcwd() . '/vendor/autoload.php')) {
+    require $a;
+    $projectRoot = getcwd();
+} elseif (file_exists($a = __DIR__ . '/../../../../vendor/autoload.php')) {
+    require $a;
+    $projectRoot = __DIR__ . '/../../../..';
+} elseif (file_exists($a = __DIR__ . '/../autoload.php')) {
+    require $a;
+    $projectRoot = __DIR__ . '/..';
+} else {
+    fwrite(STDERR, 'Cannot locate autoloader; please run "composer install"' . PHP_EOL);
+    exit(1);
+}
+define('PIMCORE_PROJECT_ROOT', $projectRoot);
+
+Bootstrap::defineConstants();
+
+$bundleName = $_SERVER['argv'][1];
+$kernel = Bootstrap::kernel();
+
+if (!version_compare(Helper::getPimcoreVersion(), '11', '<')) {
+    Cli::exec(realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' pimcore:bundle:enable' . $bundleName);
+} else {
+    try {
+        $installerKernel = new InstallerKernel(PIMCORE_PROJECT_ROOT, Config::getEnvironment(), true);
+        $bundleConfigFile = $installerKernel->getBundlesConfigFile();
+        $bundles = require $bundleConfigFile;
+        $bundleClass = getBundleClass($bundleName);
+
+        $bundles[$bundleClass] = ['all' => true];
+
+        $fileContent = '<?php
+
+return [';
+        foreach ($bundles as $bundleClass => $enableSetting) {
+            $fileContent .= PHP_EOL . '    ' . $bundleClass . '::class => [';
+            foreach ($enableSetting as $environment => $isEnabled) {
+                $fileContent .= '\'' . $environment . '\' => ' . var_export($isEnabled, true) . ',';
+            }
+            $fileContent .= '],';
+        }
+        $fileContent .= PHP_EOL . '];';
+
+        file_put_contents($bundleConfigFile, $fileContent);
+    } catch (Exception $exception) {
+        echo $exception->getMessage();
+    }
+}
+
+Cli::exec(realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' pimcore:bundle:install ' . $bundleName);
+
+echo "Bundle $bundleName enabled\n";
+function getBundleClass(string $bundleId): string
+{
+    global $kernel;
+    $bundleId = str_replace('/', '\\', $bundleId);
+
+    $installedClasses = getInstalledClasses();
+
+    if (array_key_exists($bundleId, $installedClasses)) {
+        $bundleClass = $installedClasses[$bundleId];
+    } else {
+    $bundleClass = $kernel->getBundle($bundleId)::class;
+    }
+
+    return $bundleClass;
+}
+
+function getInstalledClasses(): array
+{
+    global $projectRoot;
+
+    require_once $projectRoot . '/vendor/autoload.php';
+
+    $allClasses = get_declared_classes();
+
+    $classes = [];
+    foreach ($allClasses as $class)
+    {
+        $classes[basename(str_replace('\\', '/', $class))] = $class;
+    }
+
+    return $classes;
+}

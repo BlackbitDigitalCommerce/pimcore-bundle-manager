@@ -1,0 +1,25 @@
+{
+  "name": "blackbit/pimcore-bundle-manager",
+  "version": "1.0.0",
+  "description": "Enables bundles for pimcore projects",
+  "type": "pimcore-bundle",
+  "license": "MIT",
+  "require": {
+    "../../../vendor/pimcore/pimcore": "~5.0",
+    "../../../vendor/symfony/console": "~3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Blackbit\\BundleEnablerBundle\\": "/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Blackbit digital Commerce GmbH",
+      "email": "info@blackbit.de"
+    }
+  ],
+  "bin": [
+    "Tools/enable-bundle"
+  ]
+}

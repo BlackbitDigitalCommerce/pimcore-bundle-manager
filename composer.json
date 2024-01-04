@@ -1,12 +1,10 @@
 {
   "name": "blackbit/pimcore-bundle-manager",
   "version": "1.0.0",
-  "description": "Enables bundles for pimcore projects",
-  "type": "pimcore-bundle",
-  "license": "MIT",
+  "description": "Enables bundles for pimcore projects (replacement for bin/console pimcore:bundle:enable)",
+  "license": "GPL-3.0-or-later",
   "require": {
-    "../../../vendor/pimcore/pimcore": "~5.0",
-    "../../../vendor/symfony/console": "~3.0"
+    "pimcore/pimcore": ">=5.4"
   },
   "autoload": {
     "psr-4": {

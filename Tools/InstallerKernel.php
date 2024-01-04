@@ -8,6 +8,8 @@
  *  You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+namespace Blackbit\PimcoreBundleManager\Tools;
+
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 
 class InstallerKernel
@@ -32,7 +34,7 @@ class InstallerKernel
     #[\ReturnTypeWillChange]
     public function getProjectDir()// : string
     {
-        return \Blackbit\BundleEnablerBundle\Tools\PIMCORE_PROJECT_ROOT;
+        return PIMCORE_PROJECT_ROOT;
     }
 
     /**

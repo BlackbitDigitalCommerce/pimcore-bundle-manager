@@ -1,6 +1,6 @@
 <?php
 
-namespace Blackbit\BundleEnabler\lib\Pim;
+namespace Blackbit\PimcoreBundleManager\lib\Pim;
 
 use Composer\InstalledVersions;
 

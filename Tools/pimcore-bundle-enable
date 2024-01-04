@@ -1,3 +1,5 @@
+#!/usr/bin/env php
+
 <?php
 
 use Blackbit\BundleEnabler\lib\Pim\Helper;
@@ -7,13 +9,13 @@ use Pimcore\Config;
 use Pimcore\Bootstrap;
 
 if (file_exists($a = getcwd() . '/vendor/autoload.php')) {
-    require $a;
+    require_once $a;
     $projectRoot = getcwd();
 } elseif (file_exists($a = __DIR__ . '/../../../../vendor/autoload.php')) {
-    require $a;
+    require_once $a;
     $projectRoot = __DIR__ . '/../../../..';
 } elseif (file_exists($a = __DIR__ . '/../autoload.php')) {
-    require $a;
+    require_once $a;
     $projectRoot = __DIR__ . '/..';
 } else {
     fwrite(STDERR, 'Cannot locate autoloader; please run "composer install"' . PHP_EOL);
@@ -57,7 +59,7 @@ return [';
 
 Cli::exec(realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' pimcore:bundle:install ' . $bundleName);
 
-echo "Bundle $bundleName enabled\n";
+echo "Bundle $bundleName successfully enabled and installed.\n";
 function getBundleClass(string $bundleId): string
 {
     global $kernel;
@@ -68,7 +70,7 @@ function getBundleClass(string $bundleId): string
     if (array_key_exists($bundleId, $installedClasses)) {
         $bundleClass = $installedClasses[$bundleId];
     } else {
-    $bundleClass = $kernel->getBundle($bundleId)::class;
+        $bundleClass = $kernel->getBundle($bundleId)::class;
     }
 
     return $bundleClass;

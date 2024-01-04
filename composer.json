@@ -17,6 +17,6 @@
     }
   ],
   "bin": [
-    "Tools/enable-bundle"
+    "Tools/pimcore-bundle-enable"
   ]
 }

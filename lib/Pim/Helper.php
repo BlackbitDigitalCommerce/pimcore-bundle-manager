@@ -10,6 +10,6 @@ class Helper
         if(class_exists(InstalledVersions::class)) {
             return InstalledVersions::getVersion('pimcore/pimcore');
         }
-        return Pimcore\Version::getVersion();
+        return \Pimcore\Version::getVersion();
     }
 }

@@ -20,10 +20,6 @@ class Cli
      */
     public static function exec($cmd, $outputFile = null)
     {
-        if (strpos($cmd, 'dd:') === 0 || strpos($cmd, 'data-director:') === 0 || strpos($cmd, 'import:') === 0) {
-            $cmd = '"' . self::getPhpCli() . '" ' . realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' ' . $cmd;
-        }
-
         $returnOutput = false;
         if ($outputFile === null) {
             $outputFile = sprintf(

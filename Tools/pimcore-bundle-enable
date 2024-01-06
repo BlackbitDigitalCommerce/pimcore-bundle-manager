@@ -79,14 +79,13 @@ function getBundleClass(string $bundleId): string
 
 function getInstalledClasses(): array
 {
-    global $projectRoot;
+    global $kernel;
 
-    require_once $projectRoot . '/vendor/autoload.php';
-
-    $allClasses = get_declared_classes();
+    /** @var \Pimcore\Extension\Bundle\PimcoreBundleManager $bundleManager */
+    $bundleManager = $kernel->getContainer()->get(\Pimcore\Extension\Bundle\PimcoreBundleManager::class);
 
     $classes = [];
-    foreach ($allClasses as $class)
+    foreach ($bundleManager->getAvailableBundles() as $class)
     {
         $classes[basename(str_replace('\\', '/', $class))] = $class;
     }

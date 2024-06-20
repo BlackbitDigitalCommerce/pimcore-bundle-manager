@@ -71,7 +71,7 @@ function getBundleClass(string $bundleId): string
     if (array_key_exists($bundleId, $installedClasses)) {
         $bundleClass = $installedClasses[$bundleId];
     } else {
-        $bundleClass = $kernel->getBundle($bundleId)::class;
+        $bundleClass = get_class($kernel->getBundle($bundleId));
     }
 
     return $bundleClass;

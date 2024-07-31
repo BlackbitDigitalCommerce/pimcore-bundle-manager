@@ -50,6 +50,8 @@ return [';
         }
         $fileContent .= PHP_EOL . '];';
 
+        Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');
+
         file_put_contents($bundleConfigFile, $fileContent);
 
         Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');

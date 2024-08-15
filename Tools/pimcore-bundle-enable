@@ -23,43 +23,43 @@ if (file_exists($a = getcwd() . '/vendor/autoload.php')) {
 define('PIMCORE_PROJECT_ROOT', $projectRoot);
 
 Bootstrap::defineConstants();
-
-$bundleName = $_SERVER['argv'][1];
 $kernel = Bootstrap::kernel();
 
-if (version_compare(Helper::getPimcoreVersion(), '11', '<')) {
-    Cli::exec(realpath(PIMCORE_PROJECT_ROOT . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console') . ' pimcore:bundle:enable' . $bundleName);
-} else {
-    try {
-        $installerKernel = new \Blackbit\PimcoreBundleManager\Tools\InstallerKernel(PIMCORE_PROJECT_ROOT, Config::getEnvironment(), true);
-        $bundleConfigFile = $installerKernel->getBundlesConfigFile();
-        $bundles = require $bundleConfigFile;
-        $bundleClass = getBundleClass($bundleName);
+foreach($_SERVER['argv'] as $bundleName) {
+    if (version_compare(Helper::getPimcoreVersion(), '11', '<')) {
+        Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' pimcore:bundle:enable'.$bundleName);
+    } else {
+        try {
+            $installerKernel = new \Blackbit\PimcoreBundleManager\Tools\InstallerKernel(PIMCORE_PROJECT_ROOT, Config::getEnvironment(), true);
+            $bundleConfigFile = $installerKernel->getBundlesConfigFile();
+            $bundles = require $bundleConfigFile;
+            $bundleClass = getBundleClass($bundleName);
 
-        $bundles[$bundleClass] = ['all' => true];
+            $bundles[$bundleClass] = ['all' => true];
 
-        $fileContent = '<?php
-
-return [';
-        foreach ($bundles as $bundleClass => $enableSetting) {
-            $fileContent .= PHP_EOL . '    ' . $bundleClass . '::class => [';
-            foreach ($enableSetting as $environment => $isEnabled) {
-                $fileContent .= '\'' . $environment . '\' => ' . var_export($isEnabled, true) . ',';
+            $fileContent = '<?php
+    
+    return [';
+            foreach ($bundles as $bundleClass => $enableSetting) {
+                $fileContent .= PHP_EOL.'    '.$bundleClass.'::class => [';
+                foreach ($enableSetting as $environment => $isEnabled) {
+                    $fileContent .= '\''.$environment.'\' => '.var_export($isEnabled, true).',';
+                }
+                $fileContent .= '],';
             }
-            $fileContent .= '],';
+            $fileContent .= PHP_EOL.'];';
+
+            Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');
+
+            file_put_contents($bundleConfigFile, $fileContent);
+
+            Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');
+            Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' pimcore:bundle:install '.$bundleName);
+
+            echo "Bundle $bundleName successfully enabled and installed.\n";
+        } catch (\Throwable $exception) {
+            echo $exception->getMessage();
         }
-        $fileContent .= PHP_EOL . '];';
-
-        Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');
-
-        file_put_contents($bundleConfigFile, $fileContent);
-
-        Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');
-        Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' pimcore:bundle:install '.$bundleName);
-
-        echo "Bundle $bundleName successfully enabled and installed.\n";
-    } catch (\Throwable $exception) {
-        echo $exception->getMessage();
     }
 }
 

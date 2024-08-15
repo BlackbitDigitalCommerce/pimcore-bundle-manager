@@ -53,14 +53,14 @@ foreach($_SERVER['argv'] as $bundleName) {
 
             file_put_contents($bundleConfigFile, $fileContent);
 
-            Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');
-            Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' pimcore:bundle:install '.$bundleName);
-
             echo "Bundle $bundleName successfully enabled and installed.\n";
         } catch (\Throwable $exception) {
             echo $exception->getMessage();
         }
     }
+
+    Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' cache:clear');
+    Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' pimcore:bundle:install '.$bundleName);
 }
 
 function getBundleClass(string $bundleId): string

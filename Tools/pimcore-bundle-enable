@@ -25,7 +25,7 @@ define('PIMCORE_PROJECT_ROOT', $projectRoot);
 Bootstrap::defineConstants();
 $kernel = Bootstrap::kernel();
 
-foreach($_SERVER['argv'] as $bundleName) {
+foreach(array_slice($_SERVER['argv'], 1) as $bundleName) {
     if (version_compare(Helper::getPimcoreVersion(), '11', '<')) {
         Cli::exec(realpath(PIMCORE_PROJECT_ROOT.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console').' pimcore:bundle:enable'.$bundleName);
     } else {
